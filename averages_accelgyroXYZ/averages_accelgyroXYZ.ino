@@ -93,26 +93,13 @@ void loop() {
   Serial.print(" ");
   Serial.print(averageAcY);
   Serial.print(" ");
-  Serial.println(averageAcZ);
-//  Serial.print(" ");
-//  Serial.print(averageGyX);
-//  Serial.print(" ");
-//  Serial.print(averageGyY);
-//  Serial.print(" ");
-//  Serial.println(averageGyZ);
+  Serial.print(averageAcZ);
+  Serial.print(" ");
+  Serial.print(averageGyX);
+  Serial.print(" ");
+  Serial.print(averageGyY);
+  Serial.print(" ");
+  Serial.println(averageGyZ);
   delay(delayval);
 
-  //  Serial.print(AcX);
-  //  Serial.print(" ");
-  //  Serial.print(AcY);
-  //  Serial.print(" ");
-  //  Serial.print(AcZ);
-  //  Serial.print(" ");
-  //  //  Serial.print(" | Tmp = "); Serial.print(Tmp/340.00+36.53);  //equation for temperature in degrees C from datasheet
-  //  Serial.print(GyX);
-  //  Serial.print(" ");
-  //  Serial.print(GyY);
-  //  Serial.print(" ");
-  //  Serial.println(GyZ);
-  //  delay(3);
 }
