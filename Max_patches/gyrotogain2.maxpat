@@ -42,10 +42,10 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1081.0, 398.0, 99.0, 20.0 ],
+					"patching_rect" : [ 1081.0, 395.0, 116.0, 20.0 ],
 					"presentation_rect" : [ 1081.0, 404.0, 0.0, 0.0 ],
 					"style" : "",
-					"text" : "send number"
+					"text" : "send new number"
 				}
 
 			}
@@ -55,7 +55,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1081.0, 365.0, 99.0, 20.0 ],
+					"patching_rect" : [ 1081.0, 353.0, 99.0, 20.0 ],
 					"presentation_rect" : [ 1081.0, 366.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "new number"
@@ -65,11 +65,11 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-94",
-					"linecount" : 3,
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1081.0, 307.0, 99.0, 47.0 ],
+					"patching_rect" : [ 1081.0, 307.5, 129.0, 33.0 ],
 					"presentation_rect" : [ 1081.0, 311.0, 0.0, 0.0 ],
 					"style" : "",
 					"text" : "keep numbers from going outside of range"
@@ -2145,12 +2145,11 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-16",
-					"linecount" : 2,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 40.0, 67.0, 160.0, 35.0 ],
+					"patching_rect" : [ 57.0, 62.0, 239.0, 22.0 ],
 					"style" : "",
 					"text" : "6748 5024 14560 -3200 -896 -441"
 				}
