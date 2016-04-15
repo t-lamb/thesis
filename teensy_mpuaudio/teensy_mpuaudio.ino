@@ -1,58 +1,66 @@
-// I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
-// for both classes must be in the include path of your project
+//teensy audio
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
+
+// GUItool: begin automatically generated code
+AudioSynthWaveformSine   sine1;          //xy=106,176
+AudioSynthWaveformSine   sine2;          //xy=136,240
+AudioSynthWaveformSine   sine3;          //xy=169,292
+AudioMixer4              mixer1;         //xy=325,98
+AudioOutputI2S           i2s1;           //xy=528,101
+AudioConnection          patchCord1(sine1, 0, mixer1, 0);
+AudioConnection          patchCord2(sine2, 0, mixer1, 1);
+AudioConnection          patchCord3(sine3, 0, mixer1, 2);
+AudioConnection          patchCord4(mixer1, 0, i2s1, 0);
+AudioConnection          patchCord5(mixer1, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=367,287
+// GUItool: end automatically generated code
+
+float amp1 = 0.0;
+float amp2 = 0.0;
+float amp3 = 0.0;
+
+//mpu6050
 #include "I2Cdev.h"
 #include "MPU6050.h"
-
-// Arduino Wire library is required if I2Cdev I2CDEV_ARDUINO_WIRE implementation
-// is used in I2Cdev.h
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
 #include "Wire.h"
 #endif
-
-// class default I2C address is 0x68
-// specific I2C addresses may be passed as a parameter here
-// AD0 low = 0x68 (default for InvenSense evaluation board)
-// AD0 high = 0x69
 MPU6050 accelgyro;
-//MPU6050 accelgyro(0x69); // <-- use for AD0 high
-
 int16_t AcX, AcY, AcZ, Tmp, GyX, GyY, GyZ;
-
 int sampleWindow = 50;
-int delayval = 50;
+int delayval = 200;
 
-#define OUTPUT_READABLE_ACCELGYRO
-//#define OUTPUT_BINARY_ACCELGYRO
-
-
-#define LED_PIN 13
-bool blinkState = false;
 
 void setup() {
-  // join I2C bus (I2Cdev library doesn't do this automatically)
+  //mpu6050
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
   Wire.begin();
 #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
   Fastwire::setup(400, true);
 #endif
-
-  // initialize serial communication
-  // (38400 chosen because it works as well at 8MHz as it does at 16MHz, but
-  // it's really up to you depending on your project)
-  Serial.begin(9600);
-
-  //    // initialize device
-  //    Serial.println("Initializing I2C devices...");
   accelgyro.initialize();
 
-  //    // verify connection
-  //    Serial.println("Testing device connections...");
-  //    Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+  //teensy audio
+  Serial.begin(9600);
+  AudioMemory(20);
+  sgtl5000_1.enable();
+  sgtl5000_1.volume(0.32);
 
-  // configure Arduino LED for
-  pinMode(LED_PIN, OUTPUT);
+  sine1.frequency(311.13);
+  sine2.frequency(392.0);
+  sine3.frequency(466.16);
+  sine1.amplitude(amp1);
+  sine2.amplitude(amp2);
+  sine3.amplitude(amp3);
+
+  mixer1.gain(0, 1.0);
+  mixer1.gain(1, 1.0);
+  mixer1.gain(2, 1.0);
 }
-
 void loop() {
   // read raw accel/gyro measurements from device
   accelgyro.getMotion6(&AcX, &AcY, &AcZ, &GyX, &GyY, &GyZ);
@@ -64,7 +72,7 @@ void loop() {
   int prevReadingGyY = analogRead(GyY);
   int prevReadingGyZ = analogRead(GyZ);
   int sampleCount = 0;
-  
+
   unsigned long totalDiffAcX = 0;
   unsigned long totalDiffAcY = 0;
   unsigned long totalDiffAcZ = 0;
@@ -87,7 +95,7 @@ void loop() {
     int differenceGyX = abs(prevReadingGyX - newReadingGyX);
     int differenceGyY = abs(prevReadingGyY - newReadingGyY);
     int differenceGyZ = abs(prevReadingGyZ - newReadingGyZ);
-    
+
     //add difference to total difference
     totalDiffAcX += differenceAcX;
     totalDiffAcY += differenceAcY;
@@ -113,47 +121,33 @@ void loop() {
   float averageGyX = (float) totalDiffGyX / sampleCount;
   float averageGyY = (float) totalDiffGyY / sampleCount;
   float averageGyZ = (float) totalDiffGyZ / sampleCount;
-  
-  #ifdef OUTPUT_READABLE_ACCELGYRO
-  Serial.print(averageAcX);
-  Serial.print(" ");
-  Serial.print(averageAcY);
-  Serial.print(" ");
-  Serial.print(averageAcZ);
-  Serial.print(" ");
-  Serial.print(averageGyX);
-  Serial.print(" ");
-  Serial.print(averageGyY);
-  Serial.print(" ");
-  Serial.println(averageGyZ);
-  #endif
 
-//#ifdef OUTPUT_READABLE_ACCELGYRO
-//  Serial.print(AcX);
-//  Serial.print(" ");
-//  Serial.print(AcY);
-//  Serial.print(" ");
-//  Serial.print(AcZ);
-//  Serial.print(" ");
-//  Serial.print(GyX);
-//  Serial.print(" ");
-//  Serial.print(GyY);
-//  Serial.print(" ");
-//  Serial.println(GyZ);
-//#endif
+  //  Serial.print(averageAcX);
+  //  Serial.print(" ");
+  //  Serial.print(averageAcY);
+  //  Serial.print(" ");
+  //  Serial.print(averageAcZ);
+  //  Serial.print(" ");
+  //  Serial.print(averageGyX);
+  //  Serial.print(" ");
+  //  Serial.print(averageGyY);
+  //  Serial.print(" ");
+  //  Serial.println(averageGyZ);
 
-  //    #ifdef OUTPUT_BINARY_ACCELGYRO
-  //        Serial.write((uint8_t)(ax >> 8)); Serial.write((uint8_t)(ax & 0xFF));
-  //        Serial.write((uint8_t)(ay >> 8)); Serial.write((uint8_t)(ay & 0xFF));
-  //        Serial.write((uint8_t)(az >> 8)); Serial.write((uint8_t)(az & 0xFF));
-  //        Serial.write((uint8_t)(gx >> 8)); Serial.write((uint8_t)(gx & 0xFF));
-  //        Serial.write((uint8_t)(gy >> 8)); Serial.write((uint8_t)(gy & 0xFF));
-  //        Serial.write((uint8_t)(gz >> 8)); Serial.write((uint8_t)(gz & 0xFF));
-  //    #endif
+  amp1 = averageGyX * 4.0;
+  amp2 = averageGyY * 4.0;
+  amp3 = averageGyZ * 4.0;
+
+  Serial.print(amp1);
+  Serial.print(" ");
+  Serial.print(amp2);
+  Serial.print(" ");
+  Serial.println(amp3);
+
+  sine1.amplitude(amp1);
+  sine2.amplitude(amp2);
+  sine3.amplitude(amp3);
 
   delay(delayval);
-
-  // blink LED to indicate activity
-  blinkState = !blinkState;
-  digitalWrite(LED_PIN, blinkState);
 }
+
