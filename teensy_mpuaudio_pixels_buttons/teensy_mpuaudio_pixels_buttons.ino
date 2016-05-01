@@ -43,11 +43,17 @@ int buttonState0 = 1;
 int buttonState1 = 1;
 int buttonState2 = 1;
 
+bool pressed0 = false;
+bool pressed1 = false;
+bool pressed2 = false;
+
 //neopixels
 #include <Adafruit_NeoPixel.h>
 #define PIXEL_PIN    20    // Digital IO pin connected to the NeoPixels.
-#define PIXEL_COUNT 5
+#define PIXEL_COUNT 7
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(PIXEL_COUNT, PIXEL_PIN, NEO_GRB + NEO_KHZ800);
+
+bool firstTime = true;
 
 void setup() {
   pinMode(BUTTON_PIN0, INPUT_PULLUP);
@@ -55,6 +61,9 @@ void setup() {
   pinMode(BUTTON_PIN2, INPUT_PULLUP);
 
   strip.begin();
+  strip.setPixelColor(0, strip.Color(10, 10, 50));
+  strip.setPixelColor(1, strip.Color(10, 10, 50));
+  strip.setPixelColor(2, strip.Color(10, 10, 50));
   strip.show(); // Initialize all pixels to 'off'
 
   //mpu6050
@@ -84,6 +93,12 @@ void setup() {
 }
 
 void loop() {
+  if (firstTime) {
+
+    firstTime = false;
+  }
+
+
   // read button states
   buttonState0 = digitalRead(BUTTON_PIN0);
   buttonState1 = digitalRead(BUTTON_PIN1);
@@ -177,32 +192,55 @@ void loop() {
 
   if (buttonState0 == LOW) {
     sine1.frequency(155.56); //e flat
+    strip.setPixelColor(0, strip.Color(50, 50, 200));
+    strip.show();
+
+    Serial.println("button 0");
   }
   if (buttonState1 == LOW) {
     sine2.frequency(196.00); //g
+    strip.setPixelColor(1, strip.Color(50, 50, 200));
+    strip.show();
+    Serial.println("button 1");
   }
   if (buttonState2 == LOW) {
     sine3.frequency(233.08); // a sharp
+    strip.setPixelColor(2, strip.Color(50, 50, 200));
+    strip.show();
+    Serial.println("button 2");
+  }
+
+    if (buttonState0 == LOW) {
+    sine1.frequency(155.56); //e flat
+    strip.setPixelColor(0, strip.Color(50, 50, 200));
+    strip.show();
+
+    Serial.println("button 0");
+  }
+  if (buttonState1 == LOW) {
+    sine2.frequency(196.00); //g
+    strip.setPixelColor(1, strip.Color(50, 50, 200));
+    strip.show();
+    Serial.println("button 1");
+  }
+  if (buttonState2 == LOW) {
+    sine3.frequency(233.08); // a sharp
+    strip.setPixelColor(2, strip.Color(50, 50, 200));
+    strip.show();
+    Serial.println("button 2");
   }
 
   int MoveX = averageGyX * 100;
-  Serial.println(MoveX);
+  //  Serial.println(MoveX);
 
   for (int i = 0; i < MoveX; i++) {
-    strip.setPixelColor(i, strip.Color(10, 10, 50));
+    strip.setPixelColor(i + 3, strip.Color(10, 10, 50));
     strip.show();
   }
 
-//  delay(delayval/2);
-//  
-//  for (int i = 0; i < MoveX; i++) {
-//    strip.setPixelColor(i, strip.Color(5, 5, 25));
-//    strip.show();
-//  }
-  
   delay(delayval);
 
-  for (int i = 0; i < PIXEL_COUNT; i++) {
+  for (int i = 3; i < PIXEL_COUNT; i++) {
     strip.setPixelColor(i, strip.Color(0, 0, 0));
     strip.show();
   }
