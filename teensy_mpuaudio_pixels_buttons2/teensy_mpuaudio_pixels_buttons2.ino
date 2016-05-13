@@ -46,6 +46,16 @@ int buttonState2 = 1;
 bool pressed0 = false;
 bool pressed1 = false;
 bool pressed2 = false;
+bool newSound0 = false;
+bool newSound1 = false;
+bool newSound2 = false;
+
+float freqSine1 = 311.13; //E flat
+float freqSine1New = 155.56;
+float freqSine2 = 392.0; //G
+float freqSine2New = 196.00;
+float freqSine3 = 466.16; //A sharp
+float freqSine3New = 233.08;
 
 //neopixels
 #include <Adafruit_NeoPixel.h>
@@ -80,9 +90,9 @@ void setup() {
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.32);
 
-  sine1.frequency(311.13); //E flat
-  sine2.frequency(392.0); //G
-  sine3.frequency(466.16); //A sharp
+  sine1.frequency(freqSine1);
+  sine2.frequency(freqSine2);
+  sine3.frequency(freqSine3);
   sine1.amplitude(amp1);
   sine2.amplitude(amp2);
   sine3.amplitude(amp3);
@@ -93,11 +103,9 @@ void setup() {
 }
 
 void loop() {
-  if (firstTime) {
-
-    firstTime = false;
-  }
-
+  //  if (firstTime) {
+  //    !firstTime;
+  //  }
 
   // read button states
   buttonState0 = digitalRead(BUTTON_PIN0);
@@ -164,17 +172,17 @@ void loop() {
   float averageGyY = (float) totalDiffGyY / sampleCount;
   float averageGyZ = (float) totalDiffGyZ / sampleCount;
 
-//    Serial.print(averageAcX);
-//    Serial.print(" ");
-//    Serial.print(averageAcY);
-//    Serial.print(" ");
-//    Serial.print(averageAcZ);
-//    Serial.print(" ");
-    Serial.print(averageGyX);
-    Serial.print(" ");
-    Serial.print(averageGyY);
-    Serial.print(" ");
-    Serial.println(averageGyZ);
+  //    Serial.print(averageAcX);
+  //    Serial.print(" ");
+  //    Serial.print(averageAcY);
+  //    Serial.print(" ");
+  //    Serial.print(averageAcZ);
+  //    Serial.print(" ");
+  Serial.print(averageGyX);
+  Serial.print(" ");
+  Serial.print(averageGyY);
+  Serial.print(" ");
+  Serial.println(averageGyZ);
 
   amp1 = averageGyX * 4.0;
   amp2 = averageGyY * 4.0;
@@ -190,40 +198,80 @@ void loop() {
   sine2.amplitude(amp2);
   sine3.amplitude(amp3);
 
+  //check button states
   if (buttonState0 == LOW) {
-    sine1.frequency(155.56); //e flat
-    strip.setPixelColor(0, strip.Color(50, 50, 200));
-    strip.show();
     pressed0 = true;
   }
   if (buttonState1 == LOW) {
-    sine2.frequency(196.00); //g
-    strip.setPixelColor(1, strip.Color(50, 50, 200));
-    strip.show();
-    Serial.println("button 1");
+    pressed1 = true;
   }
   if (buttonState2 == LOW) {
-    sine3.frequency(233.08); // a sharp
-    strip.setPixelColor(2, strip.Color(50, 50, 200));
-    strip.show();
-    Serial.println("button 2");
+    pressed2 = true;
   }
 
-  if (buttonState1 == LOW) {
-    sine2.frequency(196.00); //g
-    strip.setPixelColor(1, strip.Color(50, 50, 200));
-    strip.show();
-    Serial.println("button 1");
+  if (pressed0) {
+    if (buttonState0 == LOW) {
+      //still pressed
+      pressed0 = true;
+    }
+    else {
+      //change when released
+      strip.setPixelColor(0, strip.Color(50, 50, 200));
+      strip.show();
+      !pressed0;
+      //toggle between sounds
+      if (!newSound0) {
+        sine1.frequency(freqSine1New);
+        newSound0;
+      } else {
+        sine1.frequency(freqSine1);
+        !newSound0;
+      }
+    }
   }
-  if (buttonState2 == LOW) {
-    sine3.frequency(233.08); // a sharp
-    strip.setPixelColor(2, strip.Color(50, 50, 200));
-    strip.show();
-    Serial.println("button 2");
+  if (pressed1) {
+    //still pressed
+    if (buttonState1 == LOW) {
+      pressed1 = true;
+    }
+    else {
+      //change when released
+      strip.setPixelColor(1, strip.Color(50, 50, 200));
+      strip.show();
+      !pressed1;
+      //toggle between sounds
+      if (!newSound1) {
+        sine2.frequency(freqSine2New);
+        newSound1;
+      } else {
+        sine2.frequency(freqSine2);
+        !newSound1;
+      }
+    }
+  }
+  if (pressed2) {
+    //still pressed
+    if (buttonState2 == LOW) {
+      pressed2 = true;
+    }
+    else {
+      //change when released
+      sine3.frequency(freqSine3New);
+      strip.setPixelColor(2, strip.Color(50, 50, 200));
+      strip.show();
+      !pressed2;
+      //toggle between sounds
+      if (!newSound2) {
+        sine3.frequency(freqSine3New);
+        newSound2;
+      } else {
+        sine3.frequency(freqSine3);
+        !newSound2;
+      }
+    }
   }
 
-  int MoveX 
-= averageGyX * 100;
+  int MoveX = averageGyX * 100;
   //  Serial.println(MoveX);
 
   for (int i = 0; i < MoveX; i++) {
