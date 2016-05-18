@@ -198,35 +198,30 @@ void loop() {
   sine2.amplitude(amp2);
   sine3.amplitude(amp3);
 
-  //check button states
-  if (buttonState0 == LOW) {
-    pressed0 = true;
-  }
-  if (buttonState1 == LOW) {
-    pressed1 = true;
-  }
-  if (buttonState2 == LOW) {
-    pressed2 = true;
-  }
-
   if (pressed0) {
     if (buttonState0 == LOW) {
       //still pressed
       pressed0 = true;
-    }
-    else {
-      //change when released
+    } else if (!newSound0) {
+      //button is released
+      //playing original sound
       strip.setPixelColor(0, strip.Color(50, 50, 200));
       strip.show();
+      //play new sound
+      sine1.frequency(freqSine1New);
+      newSound0 = true;
+      //indicate released
       !pressed0;
-      //toggle between sounds
-      if (!newSound0) {
-        sine1.frequency(freqSine1New);
-        newSound0;
-      } else {
-        sine1.frequency(freqSine1);
-        !newSound0;
-      }
+    } else {
+      //button is released
+      //playing new sound
+      strip.setPixelColor(0, strip.Color(10, 10, 50));
+      strip.show();
+      //play original sound
+      sine1.frequency(freqSine1);
+      !newSound0;
+      //indicate released
+      !pressed0;
     }
   }
   if (pressed1) {
@@ -269,6 +264,17 @@ void loop() {
         !newSound2;
       }
     }
+  }
+
+  //check button states
+  if (buttonState0 == LOW) {
+    pressed0 = true;
+  }
+  if (buttonState1 == LOW) {
+    pressed1 = true;
+  }
+  if (buttonState2 == LOW) {
+    pressed2 = true;
   }
 
   int MoveX = averageGyX * 100;
